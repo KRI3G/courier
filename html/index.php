@@ -7,7 +7,7 @@
 </head>
 <body>
     <?php
-    echo "HOWDY"
+    echo "HOWDY";
     $env = parse_ini_file(__DIR__ . '/.env');
     $conn = new mysqli($env=['DB_LOCATION'], $env=['DB_USER'], $env=['DB_PASSWORD'], $env=['DB_NAME']);
 
