@@ -19,24 +19,13 @@
     $result = $conn->query($sql);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Dashboard</title>
-    <script>
-        function refreshData() {
-            fetch('fetch_orders.php')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('orderTableBody').innerHTML = data;
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        }
-
-        setInterval(refreshData, 5000); // Auto-refresh every 5 seconds
-    </script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -58,15 +47,15 @@
             <th>Status</th>
         </tr>
     </thead>
-    <tbody id="orderTableBody">
+    <tbody>
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
-                <td><?php echo $row['orderID']; ?></td>
-                <td><?php echo $row['received_datetime']; ?></td>
-                <td><?php echo $row['received_by']; ?></td>
-                <td><?php echo $row['tracking_number']; ?></td>
-                <td><?php echo $row['current_location']; ?></td>
-                <td><?php echo $row['status']; ?></td>
+                <td><?php echo htmlspecialchars($row['orderID']); ?></td>
+                <td><?php echo htmlspecialchars($row['received_datetime']); ?></td>
+                <td><?php echo htmlspecialchars($row['received_by']); ?></td>
+                <td><?php echo htmlspecialchars($row['tracking_number']); ?></td>
+                <td><?php echo htmlspecialchars($row['current_location']); ?></td>
+                <td><?php echo htmlspecialchars($row['status']); ?></td>
             </tr>
         <?php endwhile; ?>
     </tbody>
