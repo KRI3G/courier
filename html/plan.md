@@ -37,4 +37,5 @@
   - Set up Apache
   - Set up PHP
   - Setting up MariaDB
+    - Database delivery_log
 * Used https://github.com/szimek/signature_pad

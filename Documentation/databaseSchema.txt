@@ -1,0 +1,16 @@
+DATABASE delivery_log
+  TABLE orders
+    orderID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each order
+    received_datetime DATETIME NOT NULL,  -- Date and time the order was received
+    received_by VARCHAR(100) NOT NULL,  -- Name of the person who received the order
+    tracking_number VARCHAR(50),  -- Tracking number (Amazon, AB number, etc.)
+    items TEXT NOT NULL,  -- Items in order and their quantities
+    serial_numbers TEXT,  -- Serial numbers of the items
+    current_location VARCHAR(255) NOT NULL,  -- Where the order is currently stored
+    delivered_datetime DATETIME,  -- Date and time of delivery
+    delivered_to VARCHAR(100),  -- Name of the person receiving the delivery
+    delivered_by VARCHAR(100),  -- Name of the person making the delivery
+    ticket_number INT,  -- Associated ticket number
+    requestor_name VARCHAR(100),  -- Person who requested the order
+    status ENUM('Pending', 'Received', 'In Transit', 'Delivered', 'Cancelled') NOT NULL DEFAULT 'Pending',  -- Order status
+    notes TEXT,  -- Additional comments or notes about the order
