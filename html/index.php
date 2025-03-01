@@ -8,7 +8,7 @@
 <body>
     <?php
     $env = parse_ini_file(__DIR__ . '/.env');
-    echo "$env";
+    echo $env;
     $conn = new mysqli($env=['DB_LOCATION'], $env=['DB_USER'], $env=['DB_PASSWORD'], $env=['DB_NAME']);
 
     if ($conn->connect_error) {
