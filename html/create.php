@@ -22,11 +22,21 @@
         $receivedDatetime = "CURRENT_TIMESTAMP"; # SQL generate timestamp
         $receivedBy = "grunt"; # Test variable for now, will remove later 
         $status = "Received"; # Leaving 'Received' as the default creation value for status
+        // Specifically gonna deal with items and their bs
+        $items = [];
+        for ($i = 0; $i < count($_POST["items"]); $i++) {
+            $items[] = [
+                "name" => $_POST["items"][$i],
+                "quantity" => $_POST["quantities"][$i],
+                "serialNums" => $_POST["serials"][$i]
+            ];
+        }
+        $items_json = json_encode($items);
 
         // Setting the columns and values to be used in the SQL query
         $query = "INSERT INTO orders (";
-        $columns = ["received_datetime", "received_by", "ticket_number", "tracking_number", "requestor_name", "items", "serial_numbers", "current_location", "notes", "status"];
-        $values = [$receivedDatetime, $receivedBy, $_POST["ticket_number"], $_POST["tracking_number"], $_POST["requestor_name"], $_POST["items[]"], $_POST["serial_numbers[]"], $_POST["current_location"], $_POST["notes"], $status];
+        $columns = ["received_datetime", "received_by", "ticket_number", "tracking_number", "requestor_name", "items", "current_location", "notes", "status"];
+        $values = [$receivedDatetime, $receivedBy, $_POST["ticket_number"], $_POST["tracking_number"], $_POST["requestor_name"], $items_json, $_POST["current_location"], $_POST["notes"], $status];
         
         // Iterate through $columns to add the columns to the SQL query
         foreach ($columns as $column) {
@@ -49,20 +59,21 @@
                     $query = $query . $value;
                 }
                 else {
-                    $query = $query . "\'" . $value . "\'";
+                    $query = $query . "'" . $value . "'";
                 }
             }
             elseif (in_array($value, $exceptionValues)) { 
                 $query = $query . $value . ", ";
             }
             else {
-                $query = $query . "\'" . $value . "\'" . ", ";
+                $query = $query . "'" . $value . "'" . ", ";
             }
         }
         $query = $query . ")";
+        echo $query;
         
 
-        #$conn->query($query);
+        $conn->query($query);
     }
 ?>
 
@@ -190,7 +201,7 @@
         // Display a banner informing the user the entry has been created
         if (<?php echo $postExists; ?>) {
             let banner = document.getElementById("successBanner")
-            banner.innerHTML = "Success!" + " " + "<?php echo $query . "\\n" . $_POST["items[]"] . "and" . $_POST["serial_numbers[]"]; ?>";
+            banner.innerHTML = "Success!";
             banner.style.backgroundColor = '#218838';
             banner.style.padding = '20px';
             banner.style.color= 'white';
