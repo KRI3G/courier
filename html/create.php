@@ -1,4 +1,17 @@
 <?php
+    // Sanitation function (Thanks Chat)
+    function sanitize_input($data) {
+        if (is_array($data)) {
+            return array_map('sanitize_input', $data); // Recursively sanitize arrays
+        }
+
+        $data = trim($data); // Remove extra spaces
+        $data = stripslashes($data); // Remove backslashes
+        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8'); // Convert special chars to safe HTML entities
+        return $data;
+    }
+
+
     // Include database connection
     // Connecting to the database
     $courierRoot = '/var/www/courier/'; // DocumentRoot is /var/www/courier/html
@@ -17,6 +30,24 @@
     // Check if $_POST exists
     if (!empty($_POST)) {
         $postExists = true;
+
+        // Loop through $_POST and sanitize all values, thanks Chat
+        if (!empty($_POST)) {
+            $sanitized_post = array_map('sanitize_input', $_POST);
+            
+            // Example usage:
+            $ticket_number = filter_var($sanitized_post['ticket_number'] ?? '', FILTER_VALIDATE_INT);
+            $tracking_number = $sanitized_post['tracking_number'] ?? '';
+            $requestor_name = $sanitized_post['requestor_name'] ?? '';
+        
+            // Validate required fields
+            if (!$ticket_number) {
+                die("Error: Invalid or missing ticket number.");
+            }
+            
+            // Now $sanitized_post is safe to use in your queries
+        }
+
 
         // Some values that are not user inputted from this form
         $receivedDatetime = "CURRENT_TIMESTAMP"; # SQL generate timestamp
