@@ -15,7 +15,7 @@
     }
 
     // Fetch all orders
-    $sql = "SELECT * FROM orders ORDER BY received_datetime DESC";
+    $orders = "SELECT * FROM orders ORDER BY received_datetime DESC";
     $result = $conn->query($sql);
 ?>
 
@@ -25,42 +25,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #ddd; }
-    </style>
+    <title>Orders</title>
 </head>
 <body>
+    <h1>Delivery Log</h1>
 
-<h2>Order Dashboard</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>Received</th>
-            <th>Received By</th>
-            <th>Tracking</th>
-            <th>Location</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?php echo htmlspecialchars($row['orderID']); ?></td>
-                <td><?php echo htmlspecialchars($row['received_datetime']); ?></td>
-                <td><?php echo htmlspecialchars($row['received_by']); ?></td>
-                <td><?php echo htmlspecialchars($row['tracking_number']); ?></td>
-                <td><?php echo htmlspecialchars($row['current_location']); ?></td>
-                <td><?php echo htmlspecialchars($row['status']); ?></td>
-            </tr>
-        <?php endwhile; ?>
-    </tbody>
-</table>
-
+    
 </body>
 </html>
 
