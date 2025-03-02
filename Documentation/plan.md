@@ -20,6 +20,7 @@
   - Authenticate with Howdy?
 * Make details of entry editable
   - KEEP LOGS THO
+* Search by filters
 * DOCUMENTATION
 
 ## Process
@@ -56,5 +57,7 @@
       13. Status
       14. Notes
     - Signatures will be pulled from orderID
-      
+  - Built index.php
+    - Used as a dashboard for all available orders
+    - 
 * Used https://github.com/szimek/signature_pad
