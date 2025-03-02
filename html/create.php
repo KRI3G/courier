@@ -70,7 +70,6 @@
             }
         }
         $query = $query . ")";
-        echo $query;
         
 
         $conn->query($query);
