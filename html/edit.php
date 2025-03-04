@@ -107,14 +107,21 @@
     }
 
     // Check if $_GET is empty. Used to recall specific order details
-    if (!empty($_GET) && is_int($_GET['order'])) {
-        $orderID = intval($_GET['id'])
+    if (!empty($_GET)) {
+        $orderID = intval($_GET['id']);
         $getQuery = "SELECT * FROM orders WHERE orderID = $orderID";
 
-        $order = $conn->query($getQuery);
+        $result = $conn->query($getQuery);
+        if ($result) {
+            $order = $result->fetch_assoc();
+            echo $order;
+        }
+        else {
+            echo "<center><h1>Error " . $conn->error . "</h1></center>";
+        }
     } 
     else {
-        echo "<h1>Error getting details for order. Please ensure ?order= is not empty.</h1>";
+        echo "<center><h1>Error getting details for order. Please ensure ?order= is not empty.</h1></center>";
     }
 ?>
 
@@ -255,7 +262,7 @@
                 <button id="openSidebar" class="sidebar-btn">☰</button>
             </span>
             <span>
-                <center><h1>Create an Entry</h1></center>
+                <center><h1>Edit an Entry</h1></center>
             </span>
         </div>
         
@@ -263,14 +270,15 @@
         <h3 id="successBanner" ></div>
 
         <form action="create.php" method="POST">
+
             <label for="ticket_number">Ticket #</label>
-            <input type="number" id="ticket_number" name="ticket_number" required>
+            <input type="number" id="ticket_number" name="ticket_number" value="<?php echo $order['ticket_number'];?>" required>
 
             <label for="requestor_name">Requestor Name</label>
-            <input type="text" id="requestor_name" name="requestor_name" required>
+            <input type="text" id="requestor_name" name="requestor_name" value="<?php echo $order['requestor_name'];?>" required>
 
             <label for="tracking_number">Tracking Number</label>
-            <input type="text" id="tracking_number" name="tracking_number">
+            <input type="text" id="tracking_number" name="tracking_number" value="<?php echo $order['tracking_number'];?>">
 
             <label>Items</label>
             <div id="items">
@@ -291,7 +299,7 @@
             </select>
 
             <label for="notes">Extra Notes</label>
-            <textarea id="notes" name="notes" rows="4"></textarea>
+            <textarea id="notes" name="notes" rows="4"><?php echo $order['notes'];?></textarea>
 
             <button type="submit">Submit Order</button>
         </form>
