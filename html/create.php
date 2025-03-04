@@ -288,6 +288,7 @@
 
         <div id="sidebar" class="sidebar">
             <button id="closeSidebar" class="close-btn">&times;</button>
+            <img style="width:100%;" src="/images/logo.png" alt="Technology Services logo">
             <a href="/">Home</a>
             <a href="/create.php">Create</a>
         </div>
