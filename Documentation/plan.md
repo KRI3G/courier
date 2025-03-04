@@ -57,7 +57,10 @@
       13. Status
       14. Notes
     - Signatures will be pulled from orderID
-  - Built index.php
-    - Used as a dashboard for all available orders
-    - 
+  - Built the sites
+    - Built index.php
+      - Used as a dashboard for all available orders
+    - Built create.php
+      - Used to create new entries into the database
+      
 * Used https://github.com/szimek/signature_pad

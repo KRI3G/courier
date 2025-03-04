@@ -54,7 +54,7 @@
         }
 
         th {
-            background-color: #333;
+            background-color: #500000;
             color: #fff;
         }
 
@@ -74,7 +74,7 @@
             left: 0;
             width: 250px;
             height: 100%;
-            background-color: #333;
+            background-color: #500000;
             padding-top: 60px;
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
@@ -112,7 +112,7 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            background-color: #333;
+            background-color: #500000;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -176,8 +176,6 @@
             <button id="closeSidebar" class="close-btn">&times;</button>
             <a href="/">Home</a>
             <a href="/create.php">Create</a>
-            <a href="#">Settings</a>
-            <a href="#">Logout</a>
         </div>
     </div>
 
@@ -205,8 +203,13 @@
                     <?php 
                     foreach ($ordersArray as $order) {
                         echo "<tr>";
-                        echo "<td>" . $order['orderID'] . "</td>";
-                        echo "<td>" . "TDx". $order['ticket_number'] . "</td>";
+                        echo "<td onclick=\"window.location.href='#';\" style=\"cursor: pointer; text-align: center;\">" . $order['orderID'] . "</td>";
+                        echo "<td>";
+                            // Link to TDx link
+                            echo "<a target=\"_blank\" rel=\"noopener noreferrer\" href='https://service.tamu.edu/TDNext/Apps/34/Tickets/TicketDet?TicketID=" . $order['ticket_number'] . "'>"; 
+                                echo "TDx". $order['ticket_number'];
+                            echo "</a>";  
+                        echo "</td>";  
                         echo "<td>" . $order['requestor_name'] . "</td>";
                         echo "<td>" . $order['current_location'] . "</td>";
                         echo "<td style='text-align: center;'>" . $order['status'] . "</td>";
@@ -231,10 +234,15 @@
                     <?php 
                     foreach ($ordersArray as $order) {
                         echo "<tr>";
-                        echo "<td>" . $order['orderID'] . "</td>";
-                        echo "<td>" . "TDx". $order['ticket_number'] . "</td>";
+                        echo "<td onclick=\"window.location.href='#';\" style=\"cursor: pointer; text-align: center;\">" . $order['orderID'] . "</td>";
+                        echo "<td>";
+                            // Link to TDx link
+                            echo "<a target=\"_blank\" rel=\"noopener noreferrer\" href='https://service.tamu.edu/TDNext/Apps/34/Tickets/TicketDet?TicketID=" . $order['ticket_number'] . "'>"; 
+                                echo "TDx". $order['ticket_number'];
+                            echo "</a>";  
+                        echo "</td>";                   
                         echo "<td>" . $order['requestor_name'] . "</td>";
-                        echo "<td>" . $order['items'] . "</td>";
+                        echo "<td>" . $order['items'] . "</td>"; 
                         echo "<td>" . $order['current_location'] . "</td>";
                         echo "<td style='text-align: center;'>" . $order['status'] . "</td>";
                         echo "</tr>";

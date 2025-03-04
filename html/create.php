@@ -164,7 +164,7 @@
             background: #0056b3;
         }
         button[type="submit"] {
-            background: #28a745;
+            background: #500000;
             color: white;
             padding: 10px;
             border: none;
@@ -174,7 +174,7 @@
             border-radius: 4px;
         }
         button[type="submit"]:hover {
-            background: #218838;
+            background: #3e0000;
         }
 
 
@@ -184,7 +184,7 @@
             left: 0;
             width: 250px;
             height: 100%;
-            background-color: #333;
+            background-color: #500000;
             padding-top: 60px;
             transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
@@ -222,7 +222,7 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            background-color: #333;
+            background-color: #500000;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -290,8 +290,6 @@
             <button id="closeSidebar" class="close-btn">&times;</button>
             <a href="/">Home</a>
             <a href="/create.php">Create</a>
-            <a href="#">Settings</a>
-            <a href="#">Logout</a>
         </div>
     </div>
 
