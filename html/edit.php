@@ -121,7 +121,7 @@
         }
     } 
     else {
-        echo "<center><h1>Error getting details for order. Please ensure ?order= is not empty.</h1></center>";
+        echo "<center><h1>Error getting details for order. Please ensure ?id= is not empty.</h1></center>";
     }
 ?>
 
