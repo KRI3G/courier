@@ -132,6 +132,9 @@
             display: block;
             margin-top: 10px;
         }
+        header {
+            display:flex;
+        }
         input, select, textarea {
             width: 100%;
             padding: 8px;
@@ -173,46 +176,151 @@
         button[type="submit"]:hover {
             background: #218838;
         }
+
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #333;
+            padding-top: 60px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        /* Sidebar links */
+        .sidebar a {
+            padding: 15px;
+            display: block;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Open sidebar button */
+        .sidebar-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Show the sidebar */
+        .sidebar.show {
+            transform: translateX(0);
+        }
     </style>
 </head>
 <body>
     <div>
-    <h1>Create an Entry</h1>
-    <h3 id="successBanner" ></div>
-    <form action="create.php" method="POST">
-        <label for="ticket_number">Ticket #</label>
-        <input type="number" id="ticket_number" name="ticket_number" required>
-
-        <label for="requestor_name">Requestor Name</label>
-        <input type="text" id="requestor_name" name="requestor_name" required>
-
-        <label for="tracking_number">Tracking Number</label>
-        <input type="text" id="tracking_number" name="tracking_number">
-
-        <label>Items</label>
-        <div id="items">
-            <div class="item-group">
-                <input type="text" name="items[]" placeholder="Item Name" required>
-                <input type="number" name="quantities[]" placeholder="Quantity" min="1" required>
-                <input type="text" name="serials[]" placeholder="Serial Number">
-            </div>
+        <div class="header">
+            <span>
+                <button id="openSidebar" class="sidebar-btn">☰</button>
+            </span>
+            <span>
+                <center><h1>Create an Entry</h1></center>
+            </span>
         </div>
-        <button type="button" class="add-item" onclick="addItem()">+ Add Item</button>
+        
+        
+        <h3 id="successBanner" ></div>
 
-        <label for="current_location">Current Location</label>
-        <select id="current_location" name="current_location" required>
-            <option value="Back of the Tech-Shop">Back of the Tech-Shop</option>
-            <option value="Drop-off Shelf">Drop-off Shelf</option>
-            <option value="Building 3025">Building 3025</option>
-            <option value="Other">Other</option>
-        </select>
+        <form action="create.php" method="POST">
+            <label for="ticket_number">Ticket #</label>
+            <input type="number" id="ticket_number" name="ticket_number" required>
 
-        <label for="notes">Extra Notes</label>
-        <textarea id="notes" name="notes" rows="4"></textarea>
+            <label for="requestor_name">Requestor Name</label>
+            <input type="text" id="requestor_name" name="requestor_name" required>
 
-        <button type="submit">Submit Order</button>
-    </form>
+            <label for="tracking_number">Tracking Number</label>
+            <input type="text" id="tracking_number" name="tracking_number">
 
+            <label>Items</label>
+            <div id="items">
+                <div class="item-group">
+                    <input type="text" name="items[]" placeholder="Item Name" required>
+                    <input type="number" name="quantities[]" placeholder="Quantity" min="1" required>
+                    <input type="text" name="serials[]" placeholder="Serial Number">
+                </div>
+            </div>
+            <button type="button" class="add-item" onclick="addItem()">+ Add Item</button>
+
+            <label for="current_location">Current Location</label>
+            <select id="current_location" name="current_location" required>
+                <option value="Back of the Tech-Shop">Back of the Tech-Shop</option>
+                <option value="Drop-off Shelf">Drop-off Shelf</option>
+                <option value="Building 3025">Building 3025</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="notes">Extra Notes</label>
+            <textarea id="notes" name="notes" rows="4"></textarea>
+
+            <button type="submit">Submit Order</button>
+        </form>
+
+
+        <div id="sidebar" class="sidebar">
+            <button id="closeSidebar" class="close-btn">&times;</button>
+            <a href="/">Home</a>
+            <a href="/create.php">Create</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+        </div>
+    </div>
+
+
+    <script>
+        // Script for toggling side bar on and off
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("sidebar");
+            const openBtn = document.getElementById("openSidebar");
+            const closeBtn = document.getElementById("closeSidebar");
+        
+            openBtn.addEventListener("click", () => {
+                sidebar.classList.add("show");
+            });
+        
+            closeBtn.addEventListener("click", () => {
+                sidebar.classList.remove("show");
+            });
+        
+            // Close sidebar when clicking outside of it
+            document.addEventListener("click", (event) => {
+                if (!sidebar.contains(event.target) && !openBtn.contains(event.target)) {
+                    sidebar.classList.remove("show");
+                }
+            });
+        }); 
+    </script>
+
+    
     <script>
         function addItem() {
             let container = document.getElementById("items");
@@ -228,18 +336,18 @@
     </script>
 
     <script>
-        // Display a banner informing the user the entry has been created
-        if (<?php echo $postExists; ?>) {
-            let banner = document.getElementById("successBanner")
-            banner.innerHTML = "Success!";
-            banner.style.backgroundColor = '#218838';
-            banner.style.padding = '20px';
-            banner.style.color= 'white';
-            banner.style.borderRadius= '8px';
-            banner.style.boxshadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-        }
-    </script>
-    </div>
+            // Display a banner informing the user the entry has been created
+            if (<?php echo $postExists; ?>) {
+                let banner = document.getElementById("successBanner")
+                banner.innerHTML = "Success!";
+                banner.style.backgroundColor = '#218838';
+                banner.style.padding = '20px';
+                banner.style.color= 'white';
+                banner.style.borderRadius= '8px';
+                banner.style.boxshadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+            }
+        </script>
+
 </body>
 </html>
 
