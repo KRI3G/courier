@@ -27,7 +27,7 @@
         die("Connection failed: " . $conn->connect_error);
     }
 
-    // Check if $_POST exists
+    // Check if $_POST exists. This will be used to edit the current order
     if (!empty($_POST)) {
         $postExists = true;
 
@@ -104,6 +104,17 @@
         
 
         $conn->query($query);
+    }
+
+    // Check if $_GET is empty. Used to recall specific order details
+    if (!empty($_GET) && is_int($_GET['order'])) {
+        $orderID = intval($_GET['id'])
+        $getQuery = "SELECT * FROM orders WHERE orderID = $orderID";
+
+        $order = $conn->query($getQuery);
+    } 
+    else {
+        echo "<h1>Error getting details for order. Please ensure ?order= is not empty.</h1>";
     }
 ?>
 

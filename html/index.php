@@ -174,6 +174,10 @@
 
         <div id="sidebar" class="sidebar">
             <button id="closeSidebar" class="close-btn">&times;</button>
+            <div  style="text-align:center; margin-bottom:30px">
+                <img style="width:65%; border:5px solid grey;" src="/images/logo.png" alt="Technology Services logo">
+                <h1 style="color:white">Courier</h1>
+            </div>
             <a href="/">Home</a>
             <a href="/create.php">Create</a>
         </div>
