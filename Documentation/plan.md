@@ -24,7 +24,6 @@
 * DOCUMENTATION
 
 ## Process
-
 1. Get the basics down
   - LAMP setup on local machine
     - Might want to set up TLS between webserver and MariaDB

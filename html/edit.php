@@ -1,4 +1,5 @@
 <?php
+    
     // Sanitation function (Thanks Chat)
     function sanitize_input($data) {
         if (is_array($data)) {
@@ -31,22 +32,8 @@
     if (!empty($_POST)) {
         $postExists = true;
 
-        // Loop through $_POST and sanitize all values, thanks Chat
-        if (!empty($_POST)) {
-            $sanitized_post = array_map('sanitize_input', $_POST);
-            
-            // Example usage:
-            $ticket_number = filter_var($sanitized_post['ticket_number'] ?? '', FILTER_VALIDATE_INT);
-            $tracking_number = $sanitized_post['tracking_number'] ?? '';
-            $requestor_name = $sanitized_post['requestor_name'] ?? '';
-        
-            // Validate required fields
-            if (!$ticket_number) {
-                die("Error: Invalid or missing ticket number.");
-            }
-            
-            // Now $sanitized_post is safe to use in your queries
-        }
+        $original_post = $_POST; // Backup original $_POST
+        //$_POST = array_map('sanitize_input', $_POST); // Overwrite with sanitized version
 
 
         // Some values that are not user inputted from this form
@@ -60,44 +47,81 @@
             ];
         }
         $items_json = json_encode($items);
+        $deliveredDatetime = !empty($_POST['delivered_datetime']) ? $_POST['delivered_datetime'] : NULL;
 
-        $query = "UPDATE orders SET 
-            ticket_number = ?, 
-            tracking_number = ?, 
-            requestor_name = ?, 
-            items = ?, 
-            current_location = ?, 
-            notes = ?, 
-            status = ?,
-            delivered_to = ?,
-            delivery_location = ?
-        WHERE orderID = ?";
+        // This caused me such a headache omfg. 
+        if (is_null($deliveredDatetime)) {
+            $query = "UPDATE orders SET 
+                ticket_number = ?, 
+                tracking_number = ?, 
+                requestor_name = ?, 
+                items = ?, 
+                current_location = ?, 
+                notes = ?, 
+                status = ?,
+                delivered_to = ?,
+                delivery_location = ?
+            WHERE orderID = ?";
 
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("issssssssi", 
-            $_POST["ticket_number"], 
-            $_POST["tracking_number"], 
-            $_POST["requestor_name"], 
-            $items_json, 
-            $_POST["current_location"], 
-            $_POST["notes"], 
-            $_POST["status"],
-            $_POST["delivered_to"],
-            $_POST["delivery_location"],
-            $_GET["id"]  // The orderID to update
-        );
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("issssssssi", 
+                $_POST["ticket_number"], 
+                $_POST["tracking_number"], 
+                $_POST["requestor_name"], 
+                $items_json, 
+                $_POST["current_location"], 
+                $_POST["notes"], 
+                $_POST["status"],
+                $_POST["delivered_to"],
+                $_POST["delivery_location"],
+                $_GET["id"]
+            );
+        } else {
+            $query = "UPDATE orders SET 
+                ticket_number = ?, 
+                tracking_number = ?, 
+                requestor_name = ?, 
+                items = ?, 
+                current_location = ?, 
+                notes = ?, 
+                status = ?,
+                delivered_to = ?,
+                delivery_location = ?,
+                delivered_datetime = ?
+            WHERE orderID = ?";
+
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("isssssssssi", 
+                $_POST["ticket_number"], 
+                $_POST["tracking_number"], 
+                $_POST["requestor_name"], 
+                $items_json, 
+                $_POST["current_location"], 
+                $_POST["notes"], 
+                $_POST["status"],
+                $_POST["delivered_to"],
+                $_POST["delivery_location"],
+                $deliveredDatetime,
+                $_GET["id"]
+            );
+        }
 
         $stmt->execute();
         $stmt->close();
-
     }
 
     // Check if $_GET is empty. Used to recall specific order details
     if (!empty($_GET)) {
-        $orderID = intval($_GET['id']);
-        $getQuery = "SELECT * FROM orders WHERE orderID = $orderID";
+        // Prevents SQL injection by requiring an integer
+        $requestID = filter_var($_GET["id"] ?? '', FILTER_VALIDATE_INT);
+        if (!$requestID) {
+            die("Error: Invalid order ID.");
+        }
+        $getStmt = $conn->prepare("SELECT * FROM orders WHERE orderID = ?");
+        $getStmt->bind_param("i", $requestID);
+        $getStmt->execute();
 
-        $result = $conn->query($getQuery);
+        $result = $getStmt->get_result();
         if ($result) {
             $order = $result->fetch_assoc();
         }
@@ -264,9 +288,9 @@
                 <h3 style="text-align:right;">Status: <span style="color:green;"><?php echo $order['status'];?></span></h3>
             </div>
 
-            <label>Received on: <br><?php echo (new DateTime($order['received_datetime']))->format("F j, Y \\a\\t g:i A");?></label>
+            <label>Received On: <br><?php echo (new DateTime($order['received_datetime']))->format("F j, Y \\a\\t g:i A");?></label>
             
-            <label>Received by: <br><?php echo $order['received_by'];?></label>
+            <label>Received By: <br><?php echo $order['received_by'];?></label>
 
             <label for="ticket_number">Ticket #</label>
             <input type="number" id="ticket_number" name="ticket_number" value="<?php echo $order['ticket_number'];?>" required>
@@ -319,12 +343,18 @@
                 ?>
             </div>
 
-            <div id="deliveredSection" style="display: none;">
-                <label id="delivered_by" style="display: none;">Delivered by: <br><?php echo $order["received_by"]; //temporary?></label>
+            <div id="deliverySection" style="display: none;">
                 <label for="delivered_to">Delivered To</label>
-                <input type="text" id="delivered_to" name="delivered_to" value="<?php echo $order["delivered_to"];?>" placeholder="Recipient Name">
+                <input type="text" id="delivered_to" name="delivered_to" placeholder="Recipient Name" value="<?php echo $order["delivered_to"];?>">
                 <label for="delivery_location">Delivery Location</label>
-                <input type="text" id="delivery_location" name="delivery_location" value="<?php echo $order["delivery_location"];?>" placeholder="Recipient location">
+                <input type="text" id="delivery_location" name="delivery_location" placeholder="Recipient location" value="<?php echo $order["delivery_location"];?>">
+                <input type="hidden" id="delivered_datetime" name="delivered_datetime" value="<?php echo $order["delivered_datetime"];?>">
+            </div>
+            <div id="deliveredSection" style="display: none;">
+                <label>Delivered on: <br><?php echo (new DateTime($order['delivered_datetime']))->format("F j, Y \\a\\t g:i A");?></label>
+                <label id="delivered_by" >Delivered By: <br><?php echo $order["received_by"]; //temporary?></label>
+                <label id="delivered_by" >Delivered To: <br><?php echo $order["delivered_to"];?></label>
+                <label id="delivered_by" >Delivered At: <br><?php echo $order["delivery_location"];?></label>
             </div>
 
             <button type="submit">Apply Changes to Order</button>
@@ -398,31 +428,25 @@
         // Script logic for deliveries
         document.addEventListener("DOMContentLoaded", function () {
             const checkbox = document.getElementById("markDelivered");
+            const deliverySection = document.getElementById("deliverySection");
             const deliveredSection = document.getElementById("deliveredSection");
-            const deliveredByLabel = document.getElementById("delivered_by");
             const deliveredToInput = document.getElementById("delivered_to");
             const deliveryLocationInput = document.getElementById("delivery_location");
+            const deliveredDatetimeInput = document.getElementById("delivered_datetime");
+
         
             // Check if the current status is not delivered
             if (<?php echo ($order["status"] != "Delivered") ? "true" : "false";?>) {
                 // Wait for the checkbox to change status
                 checkbox.addEventListener("change", function () {
-                    if (checkbox.checked) {
-                        deliveredSection.style.display = "block";
-                        deliveredInput.required = true;
-                        deliveryLocationInput.required = true;
-                    } else {
-                        deliveredSection.style.display = "none";
-                        deliveredInput.required = false;
-                        deliveryLocationInput.required = false;
-                    }
+                    deliveredDatetimeInput.value = checkbox.checked ? (new Date().toLocaleString("en-CA", { timeZone: "America/Chicago", hour12: false }).replace(",", "").replace(/(\d{4})\/(\d{2})\/(\d{2})/, "$1-$2-$3")) : "<?php $order["delivered_datetime"]?>";
+                    deliverySection.style.display = checkbox.checked ? "block" : "none";
+                    deliveredInput.required = checkbox.checked;
+                    deliveryLocationInput.required = checkbox.checked;
                 });
             // If it is delivered, just go ahead and display the deliveredSection
             } else {
                 deliveredSection.style.display = "block";
-                deliveredByLabel.style.display = "inline";
-                deliveredInput.required = true;
-                deliveryLocationInput.required = true;
             }
         });
     </script>
