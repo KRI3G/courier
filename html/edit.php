@@ -280,6 +280,7 @@
             <label>Items</label>
             <div id="items">
                 <?php
+                    // Output all the items in the decoded items json object
                     $items_decoded = json_decode($order["items"], true);
                     foreach ($items_decoded as $item) {
                         echo '<div class="item-group">';
@@ -319,6 +320,7 @@
             </div>
 
             <div id="deliveredSection" style="display: none;">
+                <label id="delivered_by" style="display: none;">Delivered by: <br><?php echo $order["received_by"]; //temporary?></label>
                 <label for="delivered_to">Delivered To</label>
                 <input type="text" id="delivered_to" name="delivered_to" value="<?php echo $order["delivered_to"];?>" placeholder="Recipient Name">
                 <label for="delivery_location">Delivery Location</label>
@@ -397,6 +399,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const checkbox = document.getElementById("markDelivered");
             const deliveredSection = document.getElementById("deliveredSection");
+            const deliveredByLabel = document.getElementById("delivered_by");
             const deliveredToInput = document.getElementById("delivered_to");
             const deliveryLocationInput = document.getElementById("delivery_location");
         
@@ -417,6 +420,7 @@
             // If it is delivered, just go ahead and display the deliveredSection
             } else {
                 deliveredSection.style.display = "block";
+                deliveredByLabel.style.display = "inline";
                 deliveredInput.required = true;
                 deliveryLocationInput.required = true;
             }

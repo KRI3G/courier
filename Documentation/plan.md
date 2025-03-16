@@ -67,5 +67,21 @@
       - Got edit options working
       - Need to add signatures and images
       - Also identification
+
+## Security Features (MUST IMPLEMENT)
+- Edit page
+  - Make anything that should not be editable, completely uneditable (aka, use php, don't rely on html/js)
+- SQL Injection Prevention
+  - On **EVERY** page
+- Federated authentication
+  - Using TAMUs Entra ID API
+  - User access control/Authorization eforcement (to create, edit, and even see available orders)
+- Database dump
+  - Dump the database into a read/pull protected network drive on a scheduled basis
+  - Same with signatures (?)
+  - This way even I can't modify the backups of the database
+  - Also great to have in case of server dying (REDUNDANCY)
+- Log every edit to orders (?)
+  - Create parallel table with non-unique orderIDs and TIMESTAMPs of changes?
       
 * Used https://github.com/szimek/signature_pad

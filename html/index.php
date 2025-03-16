@@ -209,7 +209,7 @@
                         echo "<tr>";
                         echo "<td onclick=\"window.location.href='/edit.php?id=" . $order['orderID'] . "';\" style=\"cursor: pointer; text-align: center;\">" . $order['orderID'] . "</td>";
                         echo "<td>";
-                            // Link to TDx link
+                            // Link to TDx
                             echo "<a target=\"_blank\" rel=\"noopener noreferrer\" href='https://service.tamu.edu/TDNext/Apps/34/Tickets/TicketDet?TicketID=" . $order['ticket_number'] . "'>"; 
                                 echo "TDx". $order['ticket_number'];
                             echo "</a>";  
