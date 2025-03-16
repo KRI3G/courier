@@ -246,7 +246,13 @@
                             echo "</a>";  
                         echo "</td>";                   
                         echo "<td>" . $order['requestor_name'] . "</td>";
-                        echo "<td>" . $order['items'] . "</td>"; 
+                        echo "<td>";
+                        $items_decoded = json_decode($order["items"], true);
+                        foreach ($items_decoded as $item) {
+                            echo $item["quantity"] . "x " . $item["name"] . ", S/N: " . $item["serialNums"];
+                            echo "<br>";
+                        }
+                        echo "</td>"; 
                         echo "<td>" . $order['current_location'] . "</td>";
                         echo "<td style='text-align: center;'>" . $order['status'] . "</td>";
                         echo "</tr>";
