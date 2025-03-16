@@ -3,7 +3,7 @@
 
 ## Ideas
 * Signature Pad
-* Automatically keep track of entered and delivered time
+* ~~Automatically keep track of entered and delivered time~~
 * Pictures
   - Read serial numbers?
 * Sync with TDx?
@@ -14,8 +14,8 @@
 * Run on both desktop and mobile
   - Desktop to input
   - Mobile to send
-* Add related items to deliver (Aka computers)
-* Add notes to the delivery
+* ~~Add related items to deliver (Aka computers)~~
+* ~~Add notes to the delivery~~
 * User access control
   - Authenticate with Howdy?
 * Make details of entry editable

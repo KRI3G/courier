@@ -50,9 +50,6 @@
 
 
         // Some values that are not user inputted from this form
-        $receivedDatetime = "CURRENT_TIMESTAMP"; # SQL generate timestamp
-        $receivedBy = "grunt"; # Test variable for now, will remove later 
-        $status = "Received"; # Leaving 'Received' as the default creation value for status
         // Specifically gonna deal with items and their bs
         $items = [];
         for ($i = 0; $i < count($_POST["items"]); $i++) {
@@ -64,46 +61,31 @@
         }
         $items_json = json_encode($items);
 
-        // Setting the columns and values to be used in the SQL query
-        $query = "INSERT INTO orders (";
-        $columns = ["received_datetime", "received_by", "ticket_number", "tracking_number", "requestor_name", "items", "current_location", "notes", "status"];
-        $values = [$receivedDatetime, $receivedBy, $_POST["ticket_number"], $_POST["tracking_number"], $_POST["requestor_name"], $items_json, $_POST["current_location"], $_POST["notes"], $status];
-        
-        // Iterate through $columns to add the columns to the SQL query
-        foreach ($columns as $column) {
-            if ($column === end($columns)) {
-                $query = $query . $column;
-            }
-            else {
-                $query = $query . $column . ", ";
-            }
-        }
+        $query = "UPDATE orders SET 
+            ticket_number = ?, 
+            tracking_number = ?, 
+            requestor_name = ?, 
+            items = ?, 
+            current_location = ?, 
+            notes = ?, 
+            status = ?
+        WHERE orderID = ?";
 
-        // Append and be ready to receive POST values for SQL query
-        $query = $query . ") VALUES (";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("issssssi", 
+            $_POST["ticket_number"], 
+            $_POST["tracking_number"], 
+            $_POST["requestor_name"], 
+            $items_json, 
+            $_POST["current_location"], 
+            $_POST["notes"], 
+            $_POST["status"],
+            $_GET["id"]  // The orderID to update
+        );
 
-        $exceptionValues = [$_POST["ticket_number"], $receivedDatetime]; # specific values that shouldn't be inserted as strings
-        // Iterate through $values to add the values of the $_POST variable into the SQL query (janky, but it works)
-        foreach ($values as $value) {
-            if ($value === end($values)) {
-                if (in_array($value, $exceptionValues)) { # Because you can never be too sure, and status is indeed at the end
-                    $query = $query . $value;
-                }
-                else {
-                    $query = $query . "'" . $value . "'";
-                }
-            }
-            elseif (in_array($value, $exceptionValues)) { 
-                $query = $query . $value . ", ";
-            }
-            else {
-                $query = $query . "'" . $value . "'" . ", ";
-            }
-        }
-        $query = $query . ")";
-        
+        $stmt->execute();
+        $stmt->close();
 
-        $conn->query($query);
     }
 
     // Check if $_GET is empty. Used to recall specific order details
@@ -114,7 +96,6 @@
         $result = $conn->query($getQuery);
         if ($result) {
             $order = $result->fetch_assoc();
-            echo $order;
         }
         else {
             echo "<center><h1>Error " . $conn->error . "</h1></center>";
@@ -194,7 +175,10 @@
         button[type="submit"]:hover {
             background: #3e0000;
         }
-
+        input[type="checkbox"] {
+            display: inline-block;
+            vertical-align: middle;
+        }
 
         .sidebar {
             position: fixed;
@@ -267,9 +251,18 @@
         </div>
         
         
-        <h3 id="successBanner" ></div>
+        <h3 id="successBanner"></div>
 
-        <form action="create.php" method="POST">
+        <form action="edit.php?id=<?php echo $order['orderID'];?>" method="POST">
+
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <h3 style="text-align:left">Order ID: <?php echo $order['orderID'];?></h3>
+                <h3 style="text-align:right;">Status: <span style="color:green;"><?php echo $order['status'];?></span></h3>
+            </div>
+
+            <label>Received on: <br><?php echo (new DateTime($order['received_datetime']))->format("F j, Y \\a\\t g:i A");?></label>
+            
+            <label>Received by: <br><?php echo $order['received_by'];?></label>
 
             <label for="ticket_number">Ticket #</label>
             <input type="number" id="ticket_number" name="ticket_number" value="<?php echo $order['ticket_number'];?>" required>
@@ -282,11 +275,17 @@
 
             <label>Items</label>
             <div id="items">
-                <div class="item-group">
-                    <input type="text" name="items[]" placeholder="Item Name" required>
-                    <input type="number" name="quantities[]" placeholder="Quantity" min="1" required>
-                    <input type="text" name="serials[]" placeholder="Serial Number">
-                </div>
+                <?php
+                    $items_decoded = json_decode($order["items"], true);
+                    foreach ($items_decoded as $item) {
+                        echo '<div class="item-group">';
+                        echo '<input type="text" name="items[]" value="' . $item["name"] . '" required>';
+                        echo '<input type="number" name="quantities[]" value="' . $item["quantity"] . '" min="1" required>';
+                        echo '<input type="text" name="serials[]" value="' . $item["serialNums"] . '">';
+                        echo '</div>';
+                    }
+
+                ?>
             </div>
             <button type="button" class="add-item" onclick="addItem()">+ Add Item</button>
 
@@ -301,19 +300,33 @@
             <label for="notes">Extra Notes</label>
             <textarea id="notes" name="notes" rows="4"><?php echo $order['notes'];?></textarea>
 
-            <button type="submit">Submit Order</button>
-        </form>
+            <!-- Section used for delivery purposes -->
+            <hr>
+            <br>
 
-
-        <div id="sidebar" class="sidebar">
-            <button id="closeSidebar" class="close-btn">&times;</button>
-            <div  style="text-align:center; margin-bottom:30px">
-                <img style="width:65%; border:5px solid grey;" src="/images/logo.png" alt="Technology Services logo">
-                <h1 style="color:white">Courier</h1>
+            <div class="checkbox-container" style="text-align:left;">
+                <span><label for="markDelivered">Mark as Delivered</label></span>
+                <input type="hidden" id="status" name="status" value="Received" >
+                <input type="checkbox" id="status" name="status" style="width:10%;" value="Delivered">
             </div>
-            <a href="/">Home</a>
-            <a href="/create.php">Create</a>
+
+            <div id="deliveredSection" style="display: none;">
+                <label for="delivered_to">Delivered To</label>
+                <input type="text" id="delivered_to" name="delivered_to" value="<?php echo $orders["delivered_to"];?>" placeholder="Recipient Name">
+            </div>
+
+            <button type="submit">Apply Changes to Order</button>
+        </form>
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <button id="closeSidebar" class="close-btn">&times;</button>
+        <div  style="text-align:center; margin-bottom:30px">
+            <img style="width:65%; border:5px solid grey;" src="/images/logo.png" alt="Technology Services logo">
+            <h1 style="color:white">Courier</h1>
         </div>
+        <a href="/">Home</a>
+        <a href="/create.php">Create</a>
     </div>
 
 
@@ -367,7 +380,26 @@
                 banner.style.borderRadius= '8px';
                 banner.style.boxshadow = '0 0 10px rgba(0, 0, 0, 0.1)';
             }
-        </script>
+    </script>
+
+    <script>
+        // Script logic for deliveries
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkbox = document.getElementById("markDelivered");
+            const deliveredSection = document.getElementById("deliveredSection");
+            const deliveredInput = document.getElementById("delivered_to");
+        
+            checkbox.addEventListener("change", function () {
+                if (checkbox.checked) {
+                    deliveredSection.style.display = "block";
+                    deliveredInput.required = true;
+                } else {
+                    deliveredSection.style.display = "none";
+                    deliveredInput.required = false;
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
