@@ -68,11 +68,13 @@
             items = ?, 
             current_location = ?, 
             notes = ?, 
-            status = ?
+            status = ?,
+            delivered_to = ?,
+            delivery_location = ?
         WHERE orderID = ?";
 
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("issssssi", 
+        $stmt->bind_param("issssssssi", 
             $_POST["ticket_number"], 
             $_POST["tracking_number"], 
             $_POST["requestor_name"], 
@@ -80,6 +82,8 @@
             $_POST["current_location"], 
             $_POST["notes"], 
             $_POST["status"],
+            $_POST["delivered_to"],
+            $_POST["delivery_location"],
             $_GET["id"]  // The orderID to update
         );
 
@@ -305,19 +309,20 @@
             <br>
 
             <div class="checkbox-container" style="text-align:left;">
-                
-                <input type="hidden" id="status" name="status" value="<?php echo $order["status"];?>">
+                <input type="hidden" name="status" value="<?php echo $order["status"];?>">
                 <?php 
                 if ($order["status"] != "Delivered") {
                     echo '<span><label for="markDelivered">Mark as Delivered</label></span>';
-                    echo '<input type="checkbox" id="status" name="status" style="width:10%;" value="Delivered">';
+                    echo '<input type="checkbox" id="markDelivered" name="status" style="width:10%;" value="Delivered">';
                 }
                 ?>
             </div>
 
             <div id="deliveredSection" style="display: none;">
                 <label for="delivered_to">Delivered To</label>
-                <input type="text" id="delivered_to" name="delivered_to" value="<?php echo $orders["delivered_to"];?>" placeholder="Recipient Name">
+                <input type="text" id="delivered_to" name="delivered_to" value="<?php echo $order["delivered_to"];?>" placeholder="Recipient Name">
+                <label for="delivery_location">Delivery Location</label>
+                <input type="text" id="delivery_location" name="delivery_location" value="<?php echo $order["delivery_location"];?>" placeholder="Recipient location">
             </div>
 
             <button type="submit">Apply Changes to Order</button>
@@ -378,7 +383,7 @@
             // Display a banner informing the user the entry has been created
             if (<?php echo $postExists; ?>) {
                 let banner = document.getElementById("successBanner")
-                banner.innerHTML = "Success!";
+                banner.innerHTML = "Order Updated!";
                 banner.style.backgroundColor = '#218838';
                 banner.style.padding = '20px';
                 banner.style.color= 'white';
@@ -392,17 +397,29 @@
         document.addEventListener("DOMContentLoaded", function () {
             const checkbox = document.getElementById("markDelivered");
             const deliveredSection = document.getElementById("deliveredSection");
-            const deliveredInput = document.getElementById("delivered_to");
+            const deliveredToInput = document.getElementById("delivered_to");
+            const deliveryLocationInput = document.getElementById("delivery_location");
         
-            checkbox.addEventListener("change", function () {
-                if (checkbox.checked) {
-                    deliveredSection.style.display = "block";
-                    deliveredInput.required = true;
-                } else {
-                    deliveredSection.style.display = "none";
-                    deliveredInput.required = false;
-                }
-            });
+            // Check if the current status is not delivered
+            if (<?php echo ($order["status"] != "Delivered") ? "true" : "false";?>) {
+                // Wait for the checkbox to change status
+                checkbox.addEventListener("change", function () {
+                    if (checkbox.checked) {
+                        deliveredSection.style.display = "block";
+                        deliveredInput.required = true;
+                        deliveryLocationInput.required = true;
+                    } else {
+                        deliveredSection.style.display = "none";
+                        deliveredInput.required = false;
+                        deliveryLocationInput.required = false;
+                    }
+                });
+            // If it is delivered, just go ahead and display the deliveredSection
+            } else {
+                deliveredSection.style.display = "block";
+                deliveredInput.required = true;
+                deliveryLocationInput.required = true;
+            }
         });
     </script>
 

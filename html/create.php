@@ -341,7 +341,7 @@
             // Display a banner informing the user the entry has been created
             if (<?php echo $postExists; ?>) {
                 let banner = document.getElementById("successBanner")
-                banner.innerHTML = "Success!";
+                banner.innerHTML = "Order Created!";
                 banner.style.backgroundColor = '#218838';
                 banner.style.padding = '20px';
                 banner.style.color= 'white';
