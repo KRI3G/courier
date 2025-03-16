@@ -305,9 +305,14 @@
             <br>
 
             <div class="checkbox-container" style="text-align:left;">
-                <span><label for="markDelivered">Mark as Delivered</label></span>
-                <input type="hidden" id="status" name="status" value="Received" >
-                <input type="checkbox" id="status" name="status" style="width:10%;" value="Delivered">
+                
+                <input type="hidden" id="status" name="status" value="<?php echo $order["status"];?>">
+                <?php 
+                if ($order["status"] != "Delivered") {
+                    echo '<span><label for="markDelivered">Mark as Delivered</label></span>';
+                    echo '<input type="checkbox" id="status" name="status" style="width:10%;" value="Delivered">';
+                }
+                ?>
             </div>
 
             <div id="deliveredSection" style="display: none;">
