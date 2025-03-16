@@ -9,6 +9,7 @@ DATABASE delivery_log
     current_location VARCHAR(255) NOT NULL,  -- Where the order is currently stored
     delivered_datetime DATETIME,  -- Date and time of delivery
     delivered_to VARCHAR(100),  -- Name of the person receiving the delivery
+    delivery_location VARCHAR(100), -- Place of delivery
     delivered_by VARCHAR(100),  -- Name of the person making the delivery
     ticket_number INT,  -- Associated ticket number
     requestor_name VARCHAR(100),  -- Person who requested the order

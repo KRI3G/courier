@@ -62,5 +62,10 @@
       - Used as a dashboard for all available orders
     - Built create.php
       - Used to create new entries into the database
+      - Need to add identification
+    - Built edit.php
+      - Got edit options working
+      - Need to add signatures and images
+      - Also identification
       
 * Used https://github.com/szimek/signature_pad
