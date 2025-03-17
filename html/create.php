@@ -1,7 +1,4 @@
 <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-    
     // Sanitation function (Thanks Chat)
     function sanitize_input($data) {
         if (is_array($data)) {
