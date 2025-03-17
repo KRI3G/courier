@@ -1,4 +1,5 @@
 <?php
+/*
     // Sanitation function (Thanks Chat)
     function sanitize_input($data) {
         if (is_array($data)) {
@@ -10,6 +11,7 @@
         $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8'); // Convert special chars to safe HTML entities
         return $data;
     }
+        */
 
 
     // Include database connection
