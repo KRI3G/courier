@@ -27,6 +27,7 @@
         die("Connection failed: " . $conn->connect_error);
     }
 
+    /*
     // Check if $_POST exists
     if (!empty($_POST)) {
         $postExists = true;
@@ -105,6 +106,7 @@
 
         $conn->query($query);
     }
+    */
 ?>
 
 
