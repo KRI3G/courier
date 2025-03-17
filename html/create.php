@@ -17,7 +17,7 @@
     $courierRoot = dirname(realpath($_SERVER['DOCUMENT_ROOT'])) . DIRECTORY_SEPARATOR; // Directory above DocumentRoot
     $dbEnvPath = $courierRoot . '.env'; // /var/www/courier/.env is used to pull database credentials and information
     if (!file_exists($dbEnvPath)) {
-        die("Error: .env file not found at $dbEnvPath. Please refer to documentation");
+        die("Error: .env file not found at $dbEnvPath \nPlease refer to documentation");
     }
     $env = parse_ini_file($dbEnvPath);
     $conn = new mysqli($env['DB_LOCATION'], $env['DB_USER'], $env['DB_PASSWORD'], $env['DB_NAME']);
